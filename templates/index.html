@@ -10,7 +10,7 @@
     type="image/png">
   <style>
     body {
-      background: url(http://127.0.0.1:5500/templates/cover.jpg);
+      background: url("{{ url_for('static', filename='cover.jpg') }}");
       background-size: cover;
     }
 
@@ -137,16 +137,18 @@
         </div>
       </div>
 
-    
-      <img class="grass_bottle" style="border: 3px solid #db6500; margin-top: 30px; margin-right: 30px;" src="http://127.0.0.1:5500/templates/glass_bottles.png" alt="glass bottles" width="240"
-        height="240">
-      <img class="cans" style="border: 3px solid #db6500; margin-top: 30px; margin-right: 30px;" src="http://127.0.0.1:5500/templates/cans.png" alt="cans" width="240" height="240">
-      <img class="plastic_bottle" style=" border: 3px solid #db6500; margin-top: 30px; margin-right: 30px;" src="http://127.0.0.1:5500/templates/plastic_bottle.png" alt="plastic bottles" width="240" height="240">
+
+      <img class="grass_bottle" style="border: 3px solid #db6500; margin-top: 30px; margin-right: 30px;"
+        src="{{ url_for('send_images', path='glass_bottles.png') }}" alt="glass bottles" width="240" height="240">
+      <img class="cans" style="border: 3px solid #db6500; margin-top: 30px; margin-right: 30px;"
+        src="{{ url_for('send_images', path='cans.png') }}" alt="cans" width="240" height="240">
+      <img class="plastic_bottle" style=" border: 3px solid #db6500; margin-top: 30px; margin-right: 30px;"
+        src="{{ url_for('send_images', path='plastic_bottles.png') }}" alt="plastic bottles" width="240" height="240">
     </div>
 
     <div class="right-content">
       <video style="margin-top: 60px;" width="800" height="780" autoplay loop muted>
-        <source src="http://127.0.0.1:5500/templates/earth.mp4" type="video/mp4">
+        <source src="{{ url_for('send_images', path='earth.mp4') }}" type="video/mp4">
       </video>
     </div>
 
