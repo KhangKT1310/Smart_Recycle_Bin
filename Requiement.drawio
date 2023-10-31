@@ -1,9 +1,54 @@
-<mxfile host="app.diagrams.net" modified="2023-10-31T02:03:18.568Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" version="22.0.8" etag="dG4d4XrRqs8dNVE2guXt" type="github">
+<mxfile host="app.diagrams.net" modified="2023-10-31T02:15:33.410Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="roJQ7vUmgAlCQJiphDG9" version="22.0.8" type="github">
   <diagram name="Trang-1" id="Zl_U3QJlwA4DnNi4s-cg">
-    <mxGraphModel>
+    <mxGraphModel dx="1379" dy="771" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="200" width="410" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-3" value="3" style="rounded=1;whiteSpace=wrap;html=1;direction=south;" vertex="1" parent="1">
+          <mxGeometry x="610" y="250" width="30" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-4" value="Driver step" style="rounded=1;whiteSpace=wrap;html=1;direction=south;" vertex="1" parent="1">
+          <mxGeometry x="520" y="290" width="60" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-6" value="1" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="220" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-7" value="2" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="220" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-9" value="Power" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="360" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-10" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="270" y="210" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-11" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="270" y="440" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-12" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="640" y="440" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-13" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="640" y="210" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-14" value="List" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="200" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-15" value="Item 1 : header servo" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="SzLcq1nEcGRjUcnBwwhj-14">
+          <mxGeometry y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-16" value="Item 2 : header step motor" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="SzLcq1nEcGRjUcnBwwhj-14">
+          <mxGeometry y="60" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-17" value="Item 3 : socket IDE 40 PIN đực" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="SzLcq1nEcGRjUcnBwwhj-14">
+          <mxGeometry y="90" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="SzLcq1nEcGRjUcnBwwhj-19" value="Servo ctrl" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="280" width="180" height="60" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
