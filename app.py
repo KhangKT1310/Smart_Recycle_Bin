@@ -23,4 +23,5 @@ def submit():
         return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    #  app.run(debug=True)
+    app.run(debug=True, host='localhost', port=5000 , threaded=True, processes=1)
