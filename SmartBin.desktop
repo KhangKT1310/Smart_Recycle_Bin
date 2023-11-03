@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Smart_Recycle_Bin
+Exec=/home/khangkt/Desktop/Smart_Recycle_Bin/Start.sh
+Type=Application
+Terminal=true
+

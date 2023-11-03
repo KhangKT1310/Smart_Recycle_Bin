@@ -24,4 +24,4 @@ def submit():
 
 if __name__ == '__main__':
     #  app.run(debug=True)
-    app.run(debug=True, host='localhost', port=5000 , threaded=True, processes=1)
+    app.run(debug=True, host='localhost', port=1234 , threaded=True, processes=1)
