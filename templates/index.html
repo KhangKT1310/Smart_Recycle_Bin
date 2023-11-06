@@ -23,12 +23,13 @@
       width: 100%;
       display: flex;
       flex-direction: row;
+      margin-top: 50px;
 
     }
 
     .left-content {
       width: 65%;
-      margin-left: 30px;
+      margin-left: 60px;
 
     }
 
@@ -199,6 +200,7 @@
         webcam = new tmImage.Webcam(360, 300, flip); // width, height, flip
         await webcam.setup(); // request access to the webcam
         await webcam.play();
+        setInterval(predict, 1000);
         window.requestAnimationFrame(loop);
 
         // append elements to the DOM
@@ -212,7 +214,6 @@
 
       async function loop() {
         webcam.update(); // update the webcam frame
-        await predict();
         window.requestAnimationFrame(loop);
       }
 
@@ -279,7 +280,7 @@
           sendData('Cans ' + labelCansEl.innerHTML);
           sendData('Plastic Bottles ' + labelPBottlesEl.innerHTML);
           sendData('Normal ' + labelNormalEl.innerHTML);
-          await sleep(100);
+        
 
 
         }
