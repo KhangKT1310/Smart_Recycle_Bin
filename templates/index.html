@@ -115,6 +115,7 @@
 </head>
 
 <body>
+
   <div class="container">
     <div class="left-content">
       <h1 class="title">Smart Recycle Bin</h1>
@@ -244,9 +245,13 @@
       }
       // run the webcam image through the image model
       async function predict() {
+        let value = [0, 0, 0, 0];
         // predict can take in an image, video or canvas html element
         const prediction = await model.predict(webcam.canvas);
         for (let i = 0; i < maxPredictions; i++) {
+
+          value[i] = prediction[i].probability.toFixed(2) * 100;
+
           const GBottlesEl = document.querySelector(".data-GBottles");
           const labelGBottlesEl = document.querySelector(".label-GBottles");
           GBottlesEl.style.width =
@@ -257,34 +262,65 @@
           const CansEl = document.querySelector(".data-Cans");
           const labelCansEl = document.querySelector(".label-Cans");
           CansEl.style.width =
-            prediction[0].probability.toFixed(2) * 100 + "%";
+            prediction[1].probability.toFixed(2) * 100 + "%";
           labelCansEl.innerHTML =
-            (prediction[0].probability * 100).toFixed(2) + "%";
+            (prediction[1].probability * 100).toFixed(2) + "%";
 
 
           const PBottlesEl = document.querySelector(".data-PBottles");
           const labelPBottlesEl = document.querySelector(".label-PBottles");
           PBottlesEl.style.width =
-            prediction[1].probability.toFixed(2) * 100 + "%";
+            prediction[2].probability.toFixed(2) * 100 + "%";
           labelPBottlesEl.innerHTML =
-            (prediction[1].probability * 100).toFixed(2) + "%";
+            (prediction[2].probability * 100).toFixed(2) + "%";
 
           const NormalEl = document.querySelector(".data-Normal");
           const labelNormalEl = document.querySelector(".label-Normal");
           NormalEl.style.width =
-            prediction[0].probability.toFixed(2) * 100 + "%";
+            prediction[3].probability.toFixed(2) * 100 + "%";
           labelNormalEl.innerHTML =
-            (prediction[0].probability * 100).toFixed(2) + "%";
+            (prediction[3].probability * 100).toFixed(2) + "%";
 
           sendData('Glass Bottles ' + labelGBottlesEl.innerHTML);
           sendData('Cans ' + labelCansEl.innerHTML);
           sendData('Plastic Bottles ' + labelPBottlesEl.innerHTML);
           sendData('Normal ' + labelNormalEl.innerHTML);
-        
-
 
         }
       }
+
+      var isFullScreen = false;
+
+      document.addEventListener('dblclick', function () {
+        var element = document.documentElement;
+
+        if (!isFullScreen) {
+          if (element.requestFullscreen) {
+            element.requestFullscreen();
+          } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+          } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+          } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+          }
+
+          isFullScreen = true;
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          }
+
+          isFullScreen = false;
+        }
+      });
+
     </script>
 
 
