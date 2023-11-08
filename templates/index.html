@@ -185,8 +185,8 @@
       src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
     <script type="text/javascript">
-      const URL = "https://teachablemachine.withgoogle.com/models/IfTyrhoRZ/";
-
+      const URL = "https://teachablemachine.withgoogle.com/models/1aKNqOnaA/";
+      let value = [0, 0, 0, 0];
       let model, webcam, labelContainer, maxPredictions;
       init();
       // Load the image model and setup the webcam
@@ -245,7 +245,6 @@
       }
       // run the webcam image through the image model
       async function predict() {
-        let value = [0, 0, 0, 0];
         // predict can take in an image, video or canvas html element
         const prediction = await model.predict(webcam.canvas);
         for (let i = 0; i < maxPredictions; i++) {
@@ -281,12 +280,28 @@
           labelNormalEl.innerHTML =
             (prediction[3].probability * 100).toFixed(2) + "%";
 
-          sendData('Glass Bottles ' + labelGBottlesEl.innerHTML);
-          sendData('Cans ' + labelCansEl.innerHTML);
-          sendData('Plastic Bottles ' + labelPBottlesEl.innerHTML);
-          sendData('Normal ' + labelNormalEl.innerHTML);
 
         }
+        sendData(findLargestElementPosition(value));
+
+      }
+
+      function findLargestElementPosition(arr) {
+        if (arr.length === 0) {
+          return "The array is empty";
+        }
+
+        let largestElementPosition = 0;
+        let largestElementValue = arr[0];
+
+        for (let i = 1; i < arr.length; i++) {
+          if (arr[i] > largestElementValue) {
+            largestElementValue = arr[i];
+            largestElementPosition = i;
+          }
+        }
+
+        return `The largest element is at position ${largestElementPosition}`;
       }
 
       var isFullScreen = false;
