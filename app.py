@@ -46,6 +46,8 @@ def submit():
         # Do something with the data, for example, return it in the response
 
         set_servo_angle(120)
+        time.sleep(3)
+        set_servo_angle(0)
 
         return jsonify({'success': True, 'data': data})
     except Exception as e:
