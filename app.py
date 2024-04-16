@@ -1,114 +1,96 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
-import os
-import RPi.GPIO as GPIO
-import time
+# python 3.11
 
-# Đặt chế độ chân GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-
-# Định nghĩa chân GPIO cho A4988
-DIR = 21  # Chân điều khiển hướng (Direction)
-STEP = 20  # Chân điều khiển bước (Step)
-ENABLE = 18  # Chân điều khiển enable (Enable)
-SERVO_PIN = 16
-
-# Đặt chân là OUTPUT
-GPIO.setup(SERVO_PIN, GPIO.OUT)
-GPIO.setup(DIR, GPIO.OUT)
-GPIO.setup(STEP, GPIO.OUT)
-GPIO.setup(ENABLE, GPIO.OUT)
-
-# Khởi tạo PWM với tần số 50Hz
-pwm = GPIO.PWM(SERVO_PIN, 50)
-pwm.start(0)
-# Đặt hướng đi mặc định (ví dụ: bước tiến)
-GPIO.output(DIR, GPIO.HIGH)
-# Kích hoạt motor (bằng cách thả chân ENABLE)
-GPIO.output(ENABLE, GPIO.LOW)
-
-def move_motor(steps, delay, direction):
-    GPIO.output(DIR, direction) 
-    for _ in range(steps):
-        # Bắt đầu quay motor
-        GPIO.output(STEP, GPIO.HIGH)
-        time.sleep(delay)
-        GPIO.output(STEP, GPIO.LOW)
-        time.sleep(delay)
-
-def set_servo_angle(angle):
-    duty_cycle = (angle / 18.0) + 2
-    pwm.ChangeDutyCycle(duty_cycle)
-    time.sleep(1)
-    pwm.ChangeDutyCycle(0)
-    print("Servo on angle = \n", angle)
+import random
+from paho.mqtt import client as mqtt_client
 
 
-app = Flask(__name__)
+RPI = False
+
+if RPI:
+    import control
+    import time
 
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+broker = 'broker.emqx.io'
+port = 1883
+topic = "python/mqtt"
+# Generate a Client ID with the subscribe prefix.
+client_id = f'subscribe-{random.randint(0, 100)}'
+username = 'emqx'
+password = 'abcd'
+
+if RPI:
+    pwm = control.controlInit()
 
 
-@app.route('/images/<path:path>')
-def send_images(path):
-    return send_from_directory(os.path.join(os.path.dirname(__file__), 'media'), path)
+def connect_mqtt() -> mqtt_client:
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            print("Connected to MQTT Broker!")
+        else:
+            print("Failed to connect, return code %d\n", rc)
+
+    client = mqtt_client.Client(client_id)
+    client.username_pw_set(username, password)
+    client.on_connect = on_connect
+    client.connect(broker, port)
+    return client
 
 
-@app.route('/submit', methods=['POST'])
-def submit():
-    try:
-        data = request.get_json()['data']
-        print('Received data:', data)
-        if data == 0:
-            move_motor(100, 0.001, GPIO.HIGH)
-            time.sleep(2)
-            set_servo_angle(120)
-            time.sleep(5)
-            set_servo_angle(0)
-            time.sleep(2)
-            move_motor(100, 0.001, GPIO.LOW)
-        elif data == 1:
-            move_motor(100, 0.001, GPIO.LOW)
-            time.sleep(2)
-            set_servo_angle(120)
-            time.sleep(5)
-            set_servo_angle(0)
-            time.sleep(2)
-            move_motor(100, 0.001, GPIO.HIGH)
-        elif data == 2:
-            move_motor(300, 0.001, GPIO.HIGH)
-            time.sleep(2)
-            set_servo_angle(120)
-            time.sleep(5)
-            set_servo_angle(0)
-            time.sleep(2)
-            move_motor(300, 0.001, GPIO.LOW)
-        
+def subscribe(client: mqtt_client):
+    def on_message(client, userdata, msg):
+        try:
+            data = int(msg.payload.decode())
+            print('Received data:', data)
+            if data == 0:
+                if RPI:
+                    control.Rotate_Right(100)
+                    time.sleep(1)
+                    control.servo(pwm,120)
+                    time.sleep(3)
+                    control.servo(pwm,0)
+                    time.sleep(1)
+                    control.Rotate_Left(100)
+                print(f"current mode is plastic bottle {data}")
+            elif data == 1:
+                if RPI:
+                    control.Rotate_Right(180)
+                    time.sleep(1)
+                    control.servo(pwm,120)
+                    time.sleep(3)
+                    control.servo(pwm,0)
+                    time.sleep(1)
+                    control.Rotate_Left(100)
+                print(f"current mode is cans {data}")
+            elif data == 2:
+                if RPI:
+                    control.Rotate_Right(100)
+                    time.sleep(1)
+                    control.servo(pwm,120)
+                    time.sleep(3)
+                    control.servo(pwm,0)
+                    time.sleep(1)
+                    control.Rotate_Left(100)
+                print(f"current mode is glass bottle {data}")
+            return data
+        except Exception as e:
+            print('Error:', str(e))
+            if RPI:
+                control.release(pwm)
+            return data
 
 
-            
-        # move_motor(350, 0.001, GPIO.HIGH)
-        # Do something with the data, for example, return it in the response
-        #set_servo_angle(120)
-        #time.sleep(3)
-        #set_servo_angle(0)
-        #time.sleep(3)
 
-        return jsonify({'success': True, 'data': data})
-    except Exception as e:
-        print('Error:', str(e))
-        pwm.stop()
-        GPIO.cleanup()
-        GPIO.output(ENABLE, GPIO.HIGH)
-        return jsonify({'success': False, 'error': str(e)})
+
+    client.subscribe(topic)
+    client.on_message = on_message
+
+
+def run():
+    client = connect_mqtt()
+    subscribe(client)
+    client.loop_forever()
 
 
 if __name__ == '__main__':
-    #  app.run(debug=True)
-    app.run(debug=True, host='localhost',
-            port=8080, threaded=True, processes=1)
-
-
+    run()

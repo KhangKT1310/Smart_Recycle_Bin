@@ -10,7 +10,7 @@
     type="image/png">
   <style>
     body {
-      background: url("{{ url_for('static', filename='cover.jpg') }}");
+      background: url(../media/cover.jpg);
       background-size: cover;
     }
 
@@ -164,27 +164,36 @@
 
 
       <img class="grass_bottle" style="border: 3px solid #db6500; margin-top: 15px; margin-right: 15px;"
-        src="{{ url_for('send_images', path='glass_bottles.png') }}" alt="glass bottles" width="100" height="100">
-      <img class="cans" style="border: 3px solid #db6500; margin-top: 15px; margin-right: 15px;"
-        src="{{ url_for('send_images', path='cans.png') }}" alt="cans" width="100" height="100">
+        src="../media/glass_bottles.png" alt="glass bottles" width="100" height="100">
+      <img class="cans" style="border: 3px solid #db6500; margin-top: 15px; margin-right: 15px;" src="../media/cans.png"
+        alt="cans" width="100" height="100">
       <img class="plastic_bottle" style=" border: 3px solid #db6500; margin-top: 15px; margin-right: 15px;"
-        src="{{ url_for('send_images', path='plastic_bottles.png') }}" alt="plastic bottles" width="100" height="100">
+        src="../media/plastic_bottles.png" alt="plastic bottles" width="100" height="100">
     </div>
 
     <div class="right-content">
       <video style="margin-top: 30px; margin-left: 10px;
       " width="250px" height="500px" autoplay loop muted>
-        <source src="{{ url_for('send_images', path='earth.mp4') }}" type="video/mp4">
+        <source src="../media/earth.mp4" type="video/mp4">
       </video>
     </div>
 
 
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
     <script type="text/javascript">
+      var broker = 'broker.emqx.io';
+      var port = 8083; // Sử dụng cổng WebSocket
+      var topic = 'python/mqtt';
+      var username = 'emqx';
+      var password = 'abcd';
+      var client = new Paho.MQTT.Client(broker, port, 'publish-' + parseInt(Math.random() * 100, 10));
+      var data = '';
+
+
       const URL = "https://teachablemachine.withgoogle.com/models/1aKNqOnaA/";
       let value = [0, 0, 0, 0];
       let model, webcam, labelContainer, maxPredictions;
@@ -193,116 +202,105 @@
       async function init() {
         const modelURL = URL + "model.json";
         const metadataURL = URL + "metadata.json";
+
+
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
+
+        client.onConnectionLost = onConnectionLost;
+        client.connect({ onSuccess: onConnect, userName: username, password: password });
 
         // Convenience function to setup a webcam
         const flip = true; // whether to flip the webcam
         webcam = new tmImage.Webcam(360, 300, flip); // width, height, flip
         await webcam.setup(); // request access to the webcam
         await webcam.play();
-        setInterval(predict, 1000);
         window.requestAnimationFrame(loop);
 
-        // append elements to the DOM
         document.querySelector(".webcam-container").appendChild(webcam.canvas);
         labelContainer = document.querySelector(".label-container");
-        for (let i = 0; i < maxPredictions; i++) {
-          // and class labels
-          labelContainer.appendChild(document.createElement("div"));
+      }
+
+      // Callback khi kết nối bị mất
+      function onConnectionLost(responseObject) {
+        if (responseObject.errorCode !== 0) {
+          console.log("Connection lost: " + responseObject.errorMessage);
         }
       }
+      function onConnect() {
+        console.log('Connected to MQTT broker');
+        // Gửi thông điệp tới chủ đề MQTT
+        setInterval(predict, 1000);
+
+        async function predict() {
+          const prediction = await model.predict(webcam.canvas);
+          for (let i = 0; i < maxPredictions; i++) {
+
+            value[i] = prediction[i].probability.toFixed(2) * 100;
+
+            const GBottlesEl = document.querySelector(".data-GBottles");
+            const labelGBottlesEl = document.querySelector(".label-GBottles");
+            GBottlesEl.style.width =
+              prediction[0].probability.toFixed(2) * 100 + "%";
+            labelGBottlesEl.innerHTML =
+              (prediction[0].probability * 100).toFixed(2) + "%";
+
+            const CansEl = document.querySelector(".data-Cans");
+            const labelCansEl = document.querySelector(".label-Cans");
+            CansEl.style.width =
+              prediction[1].probability.toFixed(2) * 100 + "%";
+            labelCansEl.innerHTML =
+              (prediction[1].probability * 100).toFixed(2) + "%";
+
+
+            const PBottlesEl = document.querySelector(".data-PBottles");
+            const labelPBottlesEl = document.querySelector(".label-PBottles");
+            PBottlesEl.style.width =
+              prediction[2].probability.toFixed(2) * 100 + "%";
+            labelPBottlesEl.innerHTML =
+              (prediction[2].probability * 100).toFixed(2) + "%";
+
+            const NormalEl = document.querySelector(".data-Normal");
+            const labelNormalEl = document.querySelector(".label-Normal");
+            NormalEl.style.width =
+              prediction[3].probability.toFixed(2) * 100 + "%";
+            labelNormalEl.innerHTML =
+              (prediction[3].probability * 100).toFixed(2) + "%";
+
+
+          }
+          var message = new Paho.MQTT.Message(findLargestElementPosition(value));
+          message.destinationName = topic;
+          client.send(message);
+        }
+
+        function findLargestElementPosition(arr) {
+          if (arr.length === 0) {
+            return "The array is empty";
+          }
+
+          let largestElementPosition = 0;
+          let largestElementValue = arr[0];
+
+          for (let i = 1; i < arr.length; i++) {
+            if (arr[i] > largestElementValue) {
+              largestElementValue = arr[i];
+              largestElementPosition = i;
+            }
+          }
+
+          return String(largestElementPosition);
+        }
+
+      }
+
 
       async function loop() {
         webcam.update(); // update the webcam frame
         window.requestAnimationFrame(loop);
       }
 
-      function sendData(data) {
-        fetch('/submit', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ data: data })
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log('Server response:', data);
-          })
-          .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-          });
-      }
 
-      function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
-      // run the webcam image through the image model
-      async function predict() {
-        // predict can take in an image, video or canvas html element
-        const prediction = await model.predict(webcam.canvas);
-        for (let i = 0; i < maxPredictions; i++) {
-
-          value[i] = prediction[i].probability.toFixed(2) * 100;
-
-          const GBottlesEl = document.querySelector(".data-GBottles");
-          const labelGBottlesEl = document.querySelector(".label-GBottles");
-          GBottlesEl.style.width =
-            prediction[0].probability.toFixed(2) * 100 + "%";
-          labelGBottlesEl.innerHTML =
-            (prediction[0].probability * 100).toFixed(2) + "%";
-
-          const CansEl = document.querySelector(".data-Cans");
-          const labelCansEl = document.querySelector(".label-Cans");
-          CansEl.style.width =
-            prediction[1].probability.toFixed(2) * 100 + "%";
-          labelCansEl.innerHTML =
-            (prediction[1].probability * 100).toFixed(2) + "%";
-
-
-          const PBottlesEl = document.querySelector(".data-PBottles");
-          const labelPBottlesEl = document.querySelector(".label-PBottles");
-          PBottlesEl.style.width =
-            prediction[2].probability.toFixed(2) * 100 + "%";
-          labelPBottlesEl.innerHTML =
-            (prediction[2].probability * 100).toFixed(2) + "%";
-
-          const NormalEl = document.querySelector(".data-Normal");
-          const labelNormalEl = document.querySelector(".label-Normal");
-          NormalEl.style.width =
-            prediction[3].probability.toFixed(2) * 100 + "%";
-          labelNormalEl.innerHTML =
-            (prediction[3].probability * 100).toFixed(2) + "%";
-
-
-        }
-        sendData(findLargestElementPosition(value));
-
-      }
-
-      function findLargestElementPosition(arr) {
-        if (arr.length === 0) {
-          return "The array is empty";
-        }
-
-        let largestElementPosition = 0;
-        let largestElementValue = arr[0];
-
-        for (let i = 1; i < arr.length; i++) {
-          if (arr[i] > largestElementValue) {
-            largestElementValue = arr[i];
-            largestElementPosition = i;
-          }
-        }
-
-        return largestElementPosition;
-      }
 
       var isFullScreen = false;
 
